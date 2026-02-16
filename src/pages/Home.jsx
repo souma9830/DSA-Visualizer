@@ -1,42 +1,52 @@
-import { Link } from 'react-router-dom';
-import { Play } from 'lucide-react';
+import { motion } from 'framer-motion';
+import HeroCopy from '../components/home/HeroCopy';
+import LivePreviewCard from '../components/home/LivePreviewCard';
+import FeaturesGrid from '../components/home/FeaturesGrid';
+import HowItWorksSection from '../components/home/HowItWorksSection';
+import OutcomesSection from '../components/home/OutcomesSection';
+import {
+  containerVariants,
+  features,
+  howItWorksSteps,
+  itemVariants,
+  outcomes,
+} from '../components/home/homeContent';
+
+const MotionSection = motion.section;
+const MotionDiv = motion.div;
 
 export default function Home() {
   return (
-    <div className="max-w-5xl mx-auto px-6 py-20 flex flex-col items-center text-center">
-      {/* Welcome Message */}
-      <h1 className="text-6xl font-black text-white mb-6 tracking-tight">
-        Master Data Structures <br />
-        <span className="text-blue-500">Through Visualization</span>
-      </h1>
-      
-      {/* About Section */}
-      <p className="text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
-        DSA Lab is an interactive platform designed to help students and developers 
-        understand complex algorithms. By watching the code move step-by-step, 
-        you bridge the gap between theory and implementation.
-      </p>
+    <div className="relative overflow-hidden">
+      <MotionDiv className="pointer-events-none absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-blue-600/25 blur-3xl" />
+      <MotionDiv className="pointer-events-none absolute right-0 top-40 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute -left-16 bottom-16 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl" />
 
-      <Link 
-        to="/algorithms" 
-        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-900/20"
+      <MotionSection
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="relative mx-auto max-w-6xl px-6 py-16 md:py-24"
       >
-        <Play size={20} fill="currentColor" /> Get Started
-      </Link>
+        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <MotionDiv variants={itemVariants}>
+            <HeroCopy />
+          </MotionDiv>
 
-      {/* Detail Section */}
-      <div className="grid md:grid-cols-3 gap-8 mt-24">
-        {[
-          { title: "Visual Learning", desc: "Watch how elements move, swap, and compare in real-time." },
-          { title: "Total Control", desc: "Pause, Resume, and Reset animations to learn at your own pace." },
-          { title: "Open Source", desc: "Designed for the community. Add your own algorithms easily." }
-        ].map((feature, i) => (
-          <div key={i} className="bg-slate-800/40 p-8 rounded-3xl border border-slate-700/50 text-left">
-            <h3 className="text-blue-400 font-bold text-lg mb-2">{feature.title}</h3>
-            <p className="text-slate-400 text-sm">{feature.desc}</p>
-          </div>
-        ))}
-      </div>
+          <MotionDiv variants={itemVariants}>
+            <LivePreviewCard />
+          </MotionDiv>
+        </div>
+
+        <MotionDiv variants={itemVariants}>
+          <FeaturesGrid features={features} />
+        </MotionDiv>
+      </MotionSection>
+
+      <section className="mx-auto max-w-6xl px-6 pb-24">
+        <HowItWorksSection steps={howItWorksSteps} />
+        <OutcomesSection outcomes={outcomes} />
+      </section>
     </div>
   );
 }
