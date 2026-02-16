@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -9,6 +10,20 @@
   body {
     @apply bg-slate-900 text-white;
     margin: 0;
-    font-family: sans-serif;
+    font-family: 'Manrope', 'Segoe UI', sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Sora', 'Manrope', sans-serif;
+  }
+
+  .font-body {
+    font-family: 'Manrope', 'Segoe UI', sans-serif;
+  }
+
+  .font-code {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   }
 }
