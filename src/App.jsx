@@ -6,10 +6,10 @@ import Home from './pages/Home';
 import Algorithms from './pages/Algorithms';
 import Contact from './pages/Contact';
 import VisualizerPage from './pages/VisualizerPage';
-import { bubbleSort, bubbleSortCPP } from './algorithms/bubbleSort';
-import { selectionSort , selectionSortCPP} from './algorithms/selectionSort';
-import { quickSort, quickSortCPP } from './algorithms/quickSort';
-import { linearSearch, linearSearchCPP } from './algorithms/linearSearch'; 
+import { bubbleSortCPP } from './algorithms/bubbleSort';
+import { selectionSortCPP } from './algorithms/selectionSort';
+import { quickSortCPP } from './algorithms/quickSort';
+import { linearSearchCPP } from './algorithms/linearSearch';
 
 export default function App() {
   return (

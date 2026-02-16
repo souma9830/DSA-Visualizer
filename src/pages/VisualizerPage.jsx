@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
@@ -23,71 +22,10 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useVisualizer } from '../hooks/useVisualizer';
-=======
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useVisualizer } from '../hooks/useVisualizer';
-import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw, Code2, Copy, Download, Check } from 'lucide-react';
->>>>>>> 16d626b5c7168d282cb6276968b788659d5bd5eb
 import { bubbleSort } from '../algorithms/bubbleSort';
 import { selectionSort } from '../algorithms/selectionSort';
 import { quickSort } from '../algorithms/quickSort';
 import { linearSearch } from '../algorithms/linearSearch';
-
-const CPP_KEYWORDS = new Set([
-  'alignas', 'alignof', 'asm', 'auto', 'break', 'case', 'catch', 'class', 'const',
-  'constexpr', 'const_cast', 'continue', 'default', 'delete', 'do', 'else', 'enum',
-  'explicit', 'export', 'extern', 'false', 'for', 'friend', 'goto', 'if', 'inline',
-  'mutable', 'namespace', 'new', 'noexcept', 'nullptr', 'operator', 'private',
-  'protected', 'public', 'register', 'reinterpret_cast', 'return', 'sizeof', 'static',
-  'static_cast', 'struct', 'switch', 'template', 'this', 'throw', 'true', 'try',
-  'typedef', 'typeid', 'typename', 'union', 'using', 'virtual', 'volatile', 'while',
-]);
-
-const CPP_TYPES = new Set([
-  'bool', 'char', 'char16_t', 'char32_t', 'double', 'float', 'int', 'long', 'short',
-  'signed', 'size_t', 'std', 'string', 'unsigned', 'void', 'wchar_t',
-]);
-
-const CPP_TOKEN_REGEX = /\/\*[\s\S]*?\*\/|\/\/.*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|^\s*#.*$|\b\d+(?:\.\d+)?\b|\b[a-zA-Z_]\w*\b/gm;
-
-function getCppTokenClass(token) {
-  if (token.startsWith('//') || token.startsWith('/*')) return 'text-emerald-300';
-  if (token.startsWith('"') || token.startsWith("'")) return 'text-amber-300';
-  if (token.trimStart().startsWith('#')) return 'text-fuchsia-300';
-  if (/^\d/.test(token)) return 'text-orange-300';
-  if (CPP_TYPES.has(token)) return 'text-cyan-300';
-  if (CPP_KEYWORDS.has(token)) return 'text-sky-300';
-  return 'text-slate-100';
-}
-
-function renderHighlightedCpp(code) {
-  const nodes = [];
-  let lastIndex = 0;
-
-  for (const match of code.matchAll(CPP_TOKEN_REGEX)) {
-    const token = match[0];
-    const start = match.index ?? 0;
-
-    if (start > lastIndex) {
-      nodes.push(code.slice(lastIndex, start));
-    }
-
-    nodes.push(
-      <span key={`${start}-${token}`} className={getCppTokenClass(token)}>
-        {token}
-      </span>
-    );
-
-    lastIndex = start + token.length;
-  }
-
-  if (lastIndex < code.length) {
-    nodes.push(code.slice(lastIndex));
-  }
-
-  return nodes;
-}
 
 const algorithmMap = {
   'Bubble Sort': {
@@ -210,7 +148,6 @@ export default function VisualizerPage({ name, codeSnippet }) {
   const { array, setArray, generateRandomArray } = useVisualizer();
   const [isSorting, setIsSorting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-<<<<<<< HEAD
   const [runStatus, setRunStatus] = useState('Idle');
   const [arraySize, setArraySize] = useState(40);
   const [speed, setSpeed] = useState(30);
@@ -221,11 +158,6 @@ export default function VisualizerPage({ name, codeSnippet }) {
   const [copyState, setCopyState] = useState('idle');
   const prefersReducedMotion = useReducedMotion();
 
-=======
-  const [isCopied, setIsCopied] = useState(false);
-  const codeLines = useMemo(() => (codeSnippet || '').split('\n'), [codeSnippet]);
-  
->>>>>>> 16d626b5c7168d282cb6276968b788659d5bd5eb
   const stopSignal = useRef(false);
   const pauseSignal = useRef(false);
 
@@ -444,34 +376,6 @@ export default function VisualizerPage({ name, codeSnippet }) {
     } catch {
       setCopyState('idle');
     }
-  };
-
-  const handleCopyCode = async () => {
-    const snippet = codeSnippet || '';
-    if (!snippet) return;
-
-    try {
-      await navigator.clipboard.writeText(snippet);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 1400);
-    } catch (error) {
-      console.error('Failed to copy code:', error);
-    }
-  };
-
-  const handleDownloadCode = () => {
-    const snippet = codeSnippet || '';
-    if (!snippet) return;
-
-    const blob = new Blob([snippet], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${name.toLowerCase().replace(/\s+/g, '-')}.cpp`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -940,7 +844,6 @@ export default function VisualizerPage({ name, codeSnippet }) {
         </MotionSection>
       </div>
 
-<<<<<<< HEAD
       <MotionSection
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
@@ -966,48 +869,6 @@ export default function VisualizerPage({ name, codeSnippet }) {
               {copyState === 'copied' ? <CheckCheck size={14} /> : <Copy size={14} />}
               {copyState === 'copied' ? 'Copied' : 'Copy'}
             </button>
-=======
-      {/* C++ Code Section */}
-      <div className="w-full max-w-5xl px-4 pb-24 mt-12">
-        <div className="bg-slate-950 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
-          <div className="bg-slate-900 px-6 py-4 border-b border-slate-800 flex items-center justify-between gap-3 text-white">
-            <div className="flex items-center gap-3">
-              <Code2 size={20} className="text-blue-500" />
-              <span className="font-bold tracking-widest text-sm uppercase">C++ Implementation</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleCopyCode}
-                className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-bold uppercase tracking-wide hover:bg-slate-700 transition-colors"
-              >
-                {isCopied ? <Check size={14} /> : <Copy size={14} />}
-                {isCopied ? 'Copied' : 'Copy'}
-              </button>
-              <button
-                type="button"
-                onClick={handleDownloadCode}
-                className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-bold uppercase tracking-wide hover:bg-slate-700 transition-colors"
-              >
-                <Download size={14} />
-                Download
-              </button>
-            </div>
-          </div>
-          <div className="p-8 overflow-x-auto">
-            <div className="min-w-max text-sm font-mono leading-relaxed">
-              {codeLines.map((line, index) => (
-                <div key={`line-${index}`} className="grid grid-cols-[3rem_1fr]">
-                  <span className="select-none pr-3 text-right text-slate-500 border-r border-slate-800">
-                    {index + 1}
-                  </span>
-                  <code className="pl-4 whitespace-pre text-slate-200">
-                    {line ? renderHighlightedCpp(line) : ' '}
-                  </code>
-                </div>
-              ))}
-            </div>
->>>>>>> 16d626b5c7168d282cb6276968b788659d5bd5eb
           </div>
         </div>
 

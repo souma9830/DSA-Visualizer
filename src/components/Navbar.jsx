@@ -43,6 +43,9 @@ function NavLink({ to, label, isActive, onClick }) {
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const MotionDiv = motion.div;
+  const MotionSpan = motion.span;
+  const MotionButton = motion.button;
 
   const toggleMobile = () => setMobileOpen((prev) => !prev);
   const closeMobile = () => setMobileOpen(false);
@@ -52,7 +55,7 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group" onClick={closeMobile}>
-          <motion.div
+          <MotionDiv
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
             className="flex items-center gap-2"
@@ -66,7 +69,7 @@ export default function Navbar() {
             <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
               DSA LAB
             </span>
-          </motion.div>
+          </MotionDiv>
         </Link>
 
         {/* Desktop Nav Links */}
@@ -95,7 +98,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Button */}
-        <motion.button
+        <MotionButton
           whileTap={{ scale: 0.9 }}
           onClick={toggleMobile}
           className="md:hidden relative z-50 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10"
@@ -103,7 +106,7 @@ export default function Navbar() {
         >
           <AnimatePresence mode="wait">
             {mobileOpen ? (
-              <motion.span
+              <MotionSpan
                 key="close"
                 initial={{ rotate: -90, opacity: 0 }}
                 animate={{ rotate: 0, opacity: 1 }}
@@ -111,9 +114,9 @@ export default function Navbar() {
                 transition={{ duration: 0.2 }}
               >
                 <X size={20} />
-              </motion.span>
+              </MotionSpan>
             ) : (
-              <motion.span
+              <MotionSpan
                 key="menu"
                 initial={{ rotate: 90, opacity: 0 }}
                 animate={{ rotate: 0, opacity: 1 }}
@@ -121,16 +124,16 @@ export default function Navbar() {
                 transition={{ duration: 0.2 }}
               >
                 <Menu size={20} />
-              </motion.span>
+              </MotionSpan>
             )}
           </AnimatePresence>
-        </motion.button>
+        </MotionButton>
       </div>
 
       {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
+          <MotionDiv
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -139,7 +142,7 @@ export default function Navbar() {
           >
             <div className="flex flex-col gap-1 px-6 py-4">
               {navLinks.map((link, i) => (
-                <motion.div
+                <MotionDiv
                   key={link.to}
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
@@ -158,11 +161,11 @@ export default function Navbar() {
                     )}
                     {link.label}
                   </Link>
-                </motion.div>
+                </MotionDiv>
               ))}
 
               {/* Mobile GitHub Link */}
-              <motion.div
+              <MotionDiv
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: navLinks.length * 0.07, duration: 0.25 }}
@@ -178,9 +181,9 @@ export default function Navbar() {
                   </svg>
                   Star on GitHub
                 </a>
-              </motion.div>
+              </MotionDiv>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </nav>
