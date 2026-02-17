@@ -281,7 +281,8 @@ export default function VisualizerPage({ name, codeSnippet }) {
   }, [array]);
 
   const maxValue = valueStats.max || 1;
-  const canShowValues = showValues && array.length <= 34;
+  const isTooLargeForValues = array.length > 35; 
+  const canShowValues = showValues && !isTooLargeForValues;
   const themeConfig = colorThemes[colorTheme] ?? colorThemes.ocean;
   const themeColors = themeConfig.colors;
 
@@ -613,22 +614,37 @@ export default function VisualizerPage({ name, codeSnippet }) {
               </MotionButton>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <MotionButton
-                onClick={() => setShowValues(!showValues)}
-                className="flex items-center justify-center gap-2 rounded-xl bg-white/5 py-2.5 text-sm font-bold text-white border border-white/10"
-              >
-                {showValues ? <EyeOff size={16} /> : <Eye size={16} />}{" "}
-                {showValues ? "Hide" : "Values"}
-              </MotionButton>
-              <MotionButton
-                onClick={handleDownloadCode}
-                className="flex items-center justify-center gap-2 rounded-xl bg-blue-500/10 py-2.5 text-sm font-bold text-blue-100 border border-blue-400/20"
-              >
-                <Download size={16} /> Get C++
-              </MotionButton>
-            </div>
+           <div className="grid grid-cols-2 gap-2 items-start">
+  {/* Left Side: Values Button + UX Hint */}
+  <div className="flex flex-col">
+    <MotionButton
+      onClick={() => !isTooLargeForValues && setShowValues(!showValues)}
+      className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold border transition-all ${
+        isTooLargeForValues
+          ? "bg-slate-800/50 border-white/5 text-slate-500 cursor-not-allowed"
+          : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+      }`}
+    >
+      {showValues && !isTooLargeForValues ? <EyeOff size={16} /> : <Eye size={16} />}
+      {isTooLargeForValues ? "Hidden" : (showValues ? "Hide" : "Values")}
+    </MotionButton>
 
+    {/* UX Hint Message */}
+    {isTooLargeForValues && (
+      <p className="mt-1 text-[9px] text-amber-400/90 text-center font-medium animate-pulse leading-tight">
+        Size must be ≤ 35
+      </p>
+    )}
+  </div>
+
+  {/* Right Side: Get C++ Button (RESTORED) */}
+  <MotionButton
+    onClick={handleDownloadCode}
+    className="flex items-center justify-center gap-2 rounded-xl bg-blue-500/10 py-2.5 text-sm font-bold text-blue-100 border border-blue-400/20 hover:bg-blue-500/20 transition-all"
+  >
+    <Download size={16} /> Get C++
+  </MotionButton>
+</div>
             {!isSorting ? (
               <MotionButton
                 whileHover={{ scale: 1.02 }}
@@ -690,24 +706,33 @@ export default function VisualizerPage({ name, codeSnippet }) {
                 }}
               />
             )}
-            {array.map((item, i) => (
-              <MotionBar
-                key={i}
-                layout
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className={`relative rounded-t-sm ${getBarColor(item.status, themeColors)}`}
-                style={{
-                  height: `${(item.value / maxValue) * 100}%`,
-                  width: `${100 / array.length}%`,
-                }}
-              >
-                {canShowValues && (
-                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-slate-400">
-                    {item.value}
-                  </span>
-                )}
-              </MotionBar>
-            ))}
+         {array.map((item, i) => (
+  <MotionBar
+    key={i}
+    layout
+    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+    // We added "flex items-end justify-center" to align text at the bottom
+    className={`relative rounded-t-sm flex items-end justify-center pb-1 ${getBarColor(item.status, themeColors)}`}
+    style={{
+      height: `${(item.value / maxValue) * 100}%`,
+      width: `${100 / array.length}%`,
+    }}
+  >
+    {canShowValues && (
+      <motion.span 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-[10px] font-bold text-white select-none mb-1"
+        style={{ 
+          // This ensures text rotates if bars get too thin
+          writingMode: array.length > 30 ? 'vertical-rl' : 'horizontal-tb' 
+        }}
+      >
+        {item.value}
+      </motion.span>
+    )}
+  </MotionBar>
+))}
           </div>
         </section>
       </div>

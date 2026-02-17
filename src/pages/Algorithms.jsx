@@ -125,23 +125,7 @@ const complexityRank = {
 };
 
 export default function Algorithms() {
-<<<<<<< HEAD
-  const algorithms = [
-    {
-      id: 'bubble-sort',
-      title: 'Bubble Sort',
-      description: 'A simple sorting algorithm that  repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.',
-      path: '/visualizer/bubble-sort'
-    },
-    // Future algorithms can be added here easily!
-  ];
- 
-  return (
-    <div className="max-w-6xl mx-auto py-16 px-6"> 
-      <div className="mb-12">
-        <h1 className="text-4xl font-black text-white">Algorithms</h1>
-        <p className="text-slate-400 mt-2">Select an algorithm to start the visualization.</p>
-=======
+
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchText, setSearchText] = useState('');
   const [sortBy, setSortBy] = useState('featured');
@@ -483,7 +467,7 @@ export default function Algorithms() {
             </MotionArticle>
           );
         })}
->>>>>>> upstream/main
+
       </div>
 
       {filteredAlgorithms.length === 0 && (
