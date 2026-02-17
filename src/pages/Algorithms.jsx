@@ -7,6 +7,7 @@ import {
   BrainCircuit,
   Dices,
   Filter,
+  Layers,
   Search,
   Sparkles,
   TimerReset,
@@ -84,6 +85,20 @@ const algorithmsCatalog = [
     icon: Sparkles,
     gradient: 'from-fuchsia-500/25 via-purple-500/15 to-transparent',
     accent: 'text-fuchsia-200',
+  },
+  {
+    id: 'heap-sort',
+    title: 'Heap Sort',
+    description:
+      'A comparison-based sorting algorithm that uses a binary heap data structure to sort elements efficiently.',
+    path: '/visualizer/heap-sort',
+    category: 'sorting',
+    type: 'Comparison',
+    complexity: 'O(n log n)',
+    level: 'Intermediate',
+    icon: Layers,
+    gradient: 'from-emerald-500/25 via-teal-500/15 to-transparent',
+    accent: 'text-emerald-200',
   },
 ];
 
