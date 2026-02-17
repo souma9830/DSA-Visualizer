@@ -28,6 +28,7 @@ import { selectionSort } from "../algorithms/selectionSort";
 import { quickSort } from "../algorithms/quickSort";
 import { linearSearch } from "../algorithms/linearSearch";
 import { radixSort } from "../algorithms/radixSort";
+import { heapSort } from "../algorithms/heapSort";
 
 const CPP_KEYWORDS = new Set([
   "break",
@@ -149,6 +150,16 @@ const algorithmMap = {
     space: "O(n+k)",
     description:
       "Radix Sort avoids comparison by creating and distributing elements into buckets according to their radix.",
+  },
+  "Heap Sort": {
+    run: heapSort,
+    category: "Sorting",
+    best: "O(n log n)",
+    average: "O(n log n)",
+    worst: "O(n log n)",
+    space: "O(1)",
+    description:
+      "Heap Sort builds a max heap and repeatedly extracts the maximum element to sort the array in-place.",
   },
 };
 

@@ -13,6 +13,7 @@ import { selectionSortCPP } from './algorithms/selectionSort';
 import { quickSortCPP } from './algorithms/quickSort';
 import { linearSearchCPP } from './algorithms/linearSearch';
 import { radixSortCPP } from './algorithms/radixSort';
+import { heapSortCPP } from './algorithms/heapSort';
 
 export default function App() {
   return (
@@ -50,6 +51,10 @@ export default function App() {
             <Route
               path="/visualizer/radix-sort"
               element={<VisualizerPage name="Radix Sort" codeSnippet={radixSortCPP} />}
+            />
+            <Route
+              path="/visualizer/heap-sort"
+              element={<VisualizerPage name="Heap Sort" codeSnippet={heapSortCPP} />}
             />
           </Routes>
         </main>
