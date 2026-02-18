@@ -22,7 +22,7 @@ export const howItWorksSteps = [
   {
     step: '01',
     title: 'Pick an Algorithm',
-    desc: 'Choose from available sorting visualizers and open the page in one click.',
+    desc: 'Choose from sorting, searching, and linked-list visualizers and open one in a click.',
   },
   {
     step: '02',

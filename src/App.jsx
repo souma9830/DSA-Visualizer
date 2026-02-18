@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Algorithms from './pages/Algorithms';
 import Contact from './pages/Contact';
 import VisualizerPage from './pages/VisualizerPage';
+import LinkedListVisualizerPage from './pages/LinkedListVisualizerPage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import { bubbleSortCPP } from './algorithms/bubbleSort';
@@ -60,6 +61,10 @@ export default function App() {
             <Route 
               path="/visualizer/insertion-sort" 
               element={<VisualizerPage name="Insertion Sort" codeSnippet={insertionSortCPP} />} 
+            />
+            <Route
+              path="/visualizer/linked-list"
+              element={<LinkedListVisualizerPage />}
             />
           </Routes>
         </main>

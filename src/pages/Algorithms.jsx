@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowRight,
   ArrowUpWideNarrow,
+  Binary,
   BrainCircuit,
   Dices,
   Filter,
@@ -114,12 +115,27 @@ const algorithmsCatalog = [
     gradient: 'from-emerald-500/25 via-teal-500/15 to-transparent',
     accent: 'text-emerald-200',
   },
+  {
+    id: 'linked-list',
+    title: 'Linked List Essentials',
+    description:
+      'Visualize Reverse Linked List and Middle Node (slow/fast pointers) with step-by-step pointer movement.',
+    path: '/visualizer/linked-list',
+    category: 'linked-list',
+    type: 'Pointers',
+    complexity: 'O(n)',
+    level: 'Intermediate',
+    icon: Binary,
+    gradient: 'from-violet-500/25 via-blue-500/15 to-transparent',
+    accent: 'text-violet-200',
+  },
 ];
 
 const filterTabs = [
   { id: 'all', label: 'All' },
   { id: 'sorting', label: 'Sorting' },
   { id: 'searching', label: 'Searching' },
+  { id: 'linked-list', label: 'Linked List' },
 ];
 
 const levelTabs = ['All', 'Beginner', 'Intermediate', 'Advanced'];
@@ -199,6 +215,9 @@ export default function Algorithms() {
   const searchingCount = algorithmsCatalog.filter(
     (algorithm) => algorithm.category === 'searching',
   ).length;
+  const linkedListCount = algorithmsCatalog.filter(
+    (algorithm) => algorithm.category === 'linked-list',
+  ).length;
   const hasActiveFilters =
     activeFilter !== 'all' || activeLevel !== 'All' || searchText.trim().length > 0;
   const SpotlightIcon = spotlightAlgorithm.icon;
@@ -276,8 +295,8 @@ export default function Algorithms() {
                 <p className="mt-1 text-2xl font-bold text-blue-200">{searchingCount}</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                <p className="text-xs uppercase tracking-wider text-slate-400">Theme</p>
-                <p className="mt-1 text-2xl font-bold text-white">DSA LAB</p>
+                <p className="text-xs uppercase tracking-wider text-slate-400">Linked List</p>
+                <p className="mt-1 text-2xl font-bold text-violet-200">{linkedListCount}</p>
               </div>
             </div>
           </div>
