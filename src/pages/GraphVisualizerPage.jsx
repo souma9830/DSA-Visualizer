@@ -15,6 +15,7 @@ import {
     Network,
 } from 'lucide-react';
 import { dfsCPP, dfsJava, dfsPython, dfs } from '../algorithms/dfs';
+import { renderHighlightedCode } from '../utils/codeHighlight';
 
 const runStatusStyleMap = {
     Idle: 'border-white/15 bg-white/5 text-slate-200',
@@ -41,8 +42,6 @@ function generateRandomGraph(nodeCount, width, height) {
     }
 
     // 2. Generate Edges (ensure connectivity - MST + random edges)
-    // Simple approach: Link 0->1, 1->2... to ensure connection, then add randoms
-    // Better: Random tree + random extra edges
     const connected = new Set([0]);
     const uncommitted = new Set();
     for (let i = 1; i < nodeCount; i++) uncommitted.add(i);
@@ -73,40 +72,6 @@ function generateRandomGraph(nodeCount, width, height) {
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-// CPP/Java Syntax Highlighting helpers (reused pattern)
-const CODE_KEYWORDS = new Set([
-    "break", "case", "class", "const", "continue", "default", "do", "else", "enum", "for", "if", "new", "return", "struct", "switch", "template", "this", "throw", "typedef", "using", "virtual", "while", "public", "static", "package", "import", "def", "print", "in", "True", "False", "None", "elif", "pass", "from", "as", "if"
-]);
-const CODE_TYPES = new Set([
-    "bool", "char", "double", "float", "int", "long", "short", "void", "string", "vector", "std", "Scanner", "System", "String", "out", "println", "nextInt", "range", "map", "input", "list", "set"
-]);
-const TOKEN_REGEX = /\/\*[\s\S]*?\*\/|\/\/.*|"(?:\\.|[^"\\])*"|^\s*#.*$|\b\d+\b|\b[a-zA-Z_]\w*\b/gm;
-
-function getCodeTokenClass(token) {
-    if (token.startsWith("//") || token.startsWith("/*")) return "text-emerald-400/80 italic";
-    if (token.startsWith('"')) return "text-amber-300";
-    if (token.trim().startsWith("#")) return "text-fuchsia-400";
-    if (/^\d/.test(token)) return "text-orange-300";
-    if (CODE_TYPES.has(token)) return "text-cyan-300 font-bold";
-    if (CODE_KEYWORDS.has(token)) return "text-sky-300 font-bold";
-    return "text-slate-100";
-}
-
-function renderHighlightedCode(code) {
-    const nodes = [];
-    let lastIndex = 0;
-    const safeCode = code || "";
-    for (const match of safeCode.matchAll(TOKEN_REGEX)) {
-        const token = match[0];
-        const start = match.index;
-        if (start > lastIndex) nodes.push(safeCode.slice(lastIndex, start));
-        nodes.push(<span key={start} className={getCodeTokenClass(token)}>{token}</span>);
-        lastIndex = start + token.length;
-    }
-    if (lastIndex < safeCode.length) nodes.push(safeCode.slice(lastIndex));
-    return nodes;
 }
 
 

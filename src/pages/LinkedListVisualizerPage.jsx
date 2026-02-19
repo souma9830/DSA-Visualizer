@@ -19,6 +19,7 @@ import {
   middleNodePython,
   reverseLinkedListPython,
 } from "../algorithms/linkedList";
+import { renderHighlightedCode } from "../utils/codeHighlight";
 
 const EMPTY_MARKERS = {
   head: null,
@@ -77,73 +78,6 @@ const nodeStatusClassMap = {
   middle: "border-violet-400/45 bg-violet-500/20 text-violet-100",
 };
 
-const CODE_KEYWORDS = new Set([
-  "break",
-  "case",
-  "class",
-  "const",
-  "continue",
-  "default",
-  "do",
-  "else",
-  "enum",
-  "for",
-  "if",
-  "new",
-  "return",
-  "struct",
-  "switch",
-  "template",
-  "this",
-  "throw",
-  "typedef",
-  "using",
-  "virtual",
-  "while",
-  "def",
-  "print",
-  "len",
-  "range",
-  "in",
-  "and",
-  "or",
-  "not",
-  "is",
-  "elif",
-  "try",
-  "except",
-  "finally",
-  "with",
-  "as",
-  "pass",
-  "None",
-  "True",
-  "False",
-]);
-
-const CODE_TYPES = new Set([
-  "bool",
-  "char",
-  "double",
-  "float",
-  "int",
-  "long",
-  "short",
-  "void",
-  "string",
-  "vector",
-  "std",
-  "list",
-  "dict",
-  "set",
-  "tuple",
-  "map",
-  "input",
-]);
-
-const TOKEN_REGEX =
-  /\/\*[\s\S]*?\*\/|\/\/.*|"(?:\\.|[^"\\])*"|^\s*#.*$|\b\d+\b|\b[a-zA-Z_]\w*\b/gm;
-
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -154,38 +88,6 @@ function getRandomValue() {
 
 function getNodeStatusClass(status) {
   return nodeStatusClassMap[status] ?? nodeStatusClassMap.default;
-}
-
-function getCppTokenClass(token) {
-  if (token.startsWith("//") || token.startsWith("/*"))
-    return "text-emerald-400/80 italic";
-  if (token.startsWith('"')) return "text-amber-300";
-  if (token.trim().startsWith("#")) return "text-fuchsia-400";
-  if (/^\d/.test(token)) return "text-orange-300";
-  if (CODE_TYPES.has(token)) return "text-cyan-300 font-bold";
-  if (CODE_KEYWORDS.has(token)) return "text-sky-300 font-bold";
-  return "text-slate-100";
-}
-
-function renderHighlightedCode(code) {
-  const nodes = [];
-  let lastIndex = 0;
-  const safeCode = code || "";
-
-  for (const match of safeCode.matchAll(TOKEN_REGEX)) {
-    const token = match[0];
-    const start = match.index;
-    if (start > lastIndex) nodes.push(safeCode.slice(lastIndex, start));
-    nodes.push(
-      <span key={start} className={getCppTokenClass(token)}>
-        {token}
-      </span>,
-    );
-    lastIndex = start + token.length;
-  }
-
-  if (lastIndex < safeCode.length) nodes.push(safeCode.slice(lastIndex));
-  return nodes;
 }
 
 function createLinkedListState(size) {
@@ -876,11 +778,10 @@ export default function LinkedListVisualizerPage() {
                 pointerSummary.map((pointer) => (
                   <span
                     key={pointer.key}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${
-                      focusPointer?.key === pointer.key
+                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${focusPointer?.key === pointer.key
                         ? "border border-amber-400/50 bg-amber-500/20 text-amber-100"
                         : "border border-cyan-400/30 bg-cyan-500/10 text-cyan-100"
-                    }`}
+                      }`}
                   >
                     {pointer.label}: {pointer.value}
                   </span>
