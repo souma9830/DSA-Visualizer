@@ -175,6 +175,16 @@ export default function LinkedListVisualizerPage() {
       ? activeAlgorithm.cppSnippet
       : activeAlgorithm.pythonSnippet;
 
+  const progress = useMemo(
+    () =>
+      runStatus === "Completed"
+        ? 100
+        : nodes.length === 0
+          ? 0
+          : Math.min(Math.round((stepCount / nodes.length) * 100), 100),
+    [runStatus, stepCount, nodes.length],
+  );
+
   const waitWithControl = useCallback(async (durationMs) => {
     let elapsed = 0;
     while (elapsed < durationMs) {
@@ -512,6 +522,19 @@ export default function LinkedListVisualizerPage() {
               {activeAlgorithm.description}
             </p>
 
+            <div className="mt-5">
+              <div className="mb-2 flex items-center justify-between text-xs uppercase tracking-widest text-slate-400">
+                <span>Progress</span>
+                <span>{progress}%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
+                <MotionDiv
+                  animate={{ width: `${progress}%` }}
+                  className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500"
+                />
+              </div>
+            </div>
+
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
               <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                 <p className="text-[11px] uppercase tracking-wider text-slate-400">
@@ -781,6 +804,7 @@ export default function LinkedListVisualizerPage() {
                   <span
                     key={pointer.key}
                     className={`rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${focusPointer?.key === pointer.key
+
                       }`}
                   >
                     {pointer.label}: {pointer.value}
