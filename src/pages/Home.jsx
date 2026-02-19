@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import HeroCopy from '../components/home/HeroCopy';
 import LivePreviewCard from '../components/home/LivePreviewCard';
 import FeaturesGrid from '../components/home/FeaturesGrid';
@@ -16,6 +17,7 @@ const MotionSection = motion.section;
 const MotionDiv = motion.div;
 
 export default function Home() {
+  useDocumentTitle('Home');
   return (
     <div className="relative overflow-hidden">
       <MotionDiv className="pointer-events-none absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-blue-600/25 blur-3xl" />

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -185,6 +186,7 @@ export default function VisualizerPage({
   pythonSnippet,
 }) {
   const { array, setArray, generateRandomArray } = useVisualizer();
+  useDocumentTitle(name);
   const [isSorting, setIsSorting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [runStatus, setRunStatus] = useState("Idle");

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
@@ -23,6 +24,7 @@ const itemVariants = {
 };
 
 export default function SignIn() {
+    useDocumentTitle('Sign In');
     const [formData, setFormData] = useState({
         email: '',
         password: '',

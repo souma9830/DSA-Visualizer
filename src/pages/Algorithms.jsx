@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
@@ -86,7 +87,7 @@ const algorithmsCatalog = [
     icon: Search,
     gradient: 'from-emerald-400/25 via-teal-500/15 to-transparent',
     accent: 'text-emerald-100',
-},
+  },
   {
     id: 'radix-sort',
     title: 'Radix Sort',
@@ -183,6 +184,7 @@ const complexityRank = {
 };
 
 export default function Algorithms() {
+  useDocumentTitle('Algorithms');
 
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchText, setSearchText] = useState('');

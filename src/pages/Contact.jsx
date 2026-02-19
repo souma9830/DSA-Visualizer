@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function Contact() {
+  useDocumentTitle("Contact");
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",

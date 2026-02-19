@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -168,6 +169,7 @@ export default function LinkedListVisualizerPage() {
   const MotionDiv = motion.div;
 
   const activeAlgorithm = linkedListAlgorithms[selectedAlgorithm];
+  useDocumentTitle(activeAlgorithm.title);
   const activeCodeSnippet =
     selectedLanguage === "C++"
       ? activeAlgorithm.cppSnippet
@@ -802,8 +804,7 @@ export default function LinkedListVisualizerPage() {
                   <span
                     key={pointer.key}
                     className={`rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${focusPointer?.key === pointer.key
-                      ? "border border-amber-400/50 bg-amber-500/20 text-amber-100"
-                      : "border border-cyan-400/30 bg-cyan-500/10 text-cyan-100"
+
                       }`}
                   >
                     {pointer.label}: {pointer.value}

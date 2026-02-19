@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { motion } from 'framer-motion';
 import {
     Activity,
@@ -76,6 +77,7 @@ function sleep(ms) {
 
 
 export default function GraphVisualizerPage() {
+    useDocumentTitle('Depth First Search');
     const [graph, setGraph] = useState({ nodes: [], edges: [] });
     const [nodeCount, setNodeCount] = useState(8);
     const [speed, setSpeed] = useState(250);
