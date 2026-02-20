@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Activity,
@@ -14,7 +15,8 @@ import {
     Shuffle,
     Target,
     Waypoints,
-    Flag
+    Flag,
+    ArrowLeft
 } from 'lucide-react';
 import { dijkstraCPP, dijkstraJava, dijkstraPython, dijkstraJS, generateDijkstraSteps } from '../algorithms/dijkstra';
 import { renderHighlightedCode } from '../utils/codeHighlight';
@@ -75,6 +77,7 @@ const generateRandomGraph = (numNodes = 6) => {
 };
 
 export default function DijkstraPage() {
+    const navigate = useNavigate();
     const [graph, setGraph] = useState(() => generateRandomGraph(6));
     const [startNodeId, setStartNodeId] = useState(0);
     const [targetNodeId, setTargetNodeId] = useState(1);
@@ -196,6 +199,18 @@ export default function DijkstraPage() {
             <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden rounded-3xl border border-white/10 bg-slate-800/40 p-5 shadow-2xl backdrop-blur sm:p-7 mb-6">
                 <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
                     <div>
+                        <div className="mb-6 flex items-center">
+                            <button
+                                onClick={() => navigate("/algorithms")}
+                                className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/5 pr-4 pl-3 py-1.5 text-xs font-bold text-slate-300 transition-all hover:bg-white/10 hover:text-white"
+                            >
+                                <ArrowLeft
+                                    size={14}
+                                    className="transition-transform group-hover:-translate-x-1"
+                                />
+                                Back to Algorithms
+                            </button>
+                        </div>
                         <div className="mb-4 flex flex-wrap items-center gap-2">
                             <span className="rounded-full border border-cyan-400/25 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-cyan-200">
                                 Pathfinding
@@ -453,13 +468,24 @@ export default function DijkstraPage() {
 
             {/* Code Section */}
             <section className="mt-6 overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 shadow-2xl">
-                <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-6 py-4">
-                    <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-4 border-b border-slate-800 bg-slate-900 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <button
+                            onClick={() => navigate("/algorithms")}
+                            className="group flex items-center gap-2 rounded-lg bg-white/5 pr-4 pl-3 py-2 text-xs font-bold text-slate-200 transition-all hover:bg-white/10 hover:text-white border border-white/10"
+                        >
+                            <ArrowLeft
+                                size={14}
+                                className="transition-transform group-hover:-translate-x-1"
+                            />
+                            Back to Algorithms
+                        </button>
+                        <div className="h-6 w-px bg-slate-700 hidden sm:block" />
                         <Code2 size={20} className="text-blue-400" />
                         <span className="text-sm font-bold uppercase tracking-widest text-slate-200">
                             {selectedLanguage} Source
                         </span>
-                        <div className="ml-4 flex rounded-lg bg-white/5 p-1 border border-white/10">
+                        <div className="flex rounded-lg bg-white/5 p-1 border border-white/10">
                             {["C++", "Java", "Python", "JavaScript"].map((lang) => (
                                 <button
                                     key={lang}

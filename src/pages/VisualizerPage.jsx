@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { motion } from "framer-motion";
 import {
@@ -19,6 +20,7 @@ import {
   Sparkles,
   Download,
   Keyboard,
+  ArrowLeft,
 } from "lucide-react";
 import { useVisualizer } from "../hooks/useVisualizer";
 import { bubbleSort } from "../algorithms/bubbleSort";
@@ -187,6 +189,7 @@ export default function VisualizerPage({
   jsSnippet,
 }) {
   const { array, setArray, generateRandomArray } = useVisualizer();
+  const navigate = useNavigate();
   useDocumentTitle(name);
   const [isSorting, setIsSorting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -411,6 +414,18 @@ export default function VisualizerPage({
       >
         <div className="relative z-10 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <div>
+            <div className="mb-6 flex items-center">
+              <button
+                onClick={() => navigate("/algorithms")}
+                className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/5 pr-4 pl-3 py-1.5 text-xs font-bold text-slate-300 transition-all hover:bg-white/10 hover:text-white"
+              >
+                <ArrowLeft
+                  size={14}
+                  className="transition-transform group-hover:-translate-x-1"
+                />
+                Back to Algorithms
+              </button>
+            </div>
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-cyan-400/25 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-cyan-200">
                 {algorithm?.category}
@@ -658,13 +673,24 @@ export default function VisualizerPage({
       </div>
 
       <section className="mt-6 overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-6 py-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-4 border-b border-slate-800 bg-slate-900 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => navigate("/algorithms")}
+              className="group flex items-center gap-2 rounded-lg bg-white/5 pr-4 pl-3 py-2 text-xs font-bold text-slate-200 transition-all hover:bg-white/10 hover:text-white border border-white/10"
+            >
+              <ArrowLeft
+                size={14}
+                className="transition-transform group-hover:-translate-x-1"
+              />
+              Back to Algorithms
+            </button>
+            <div className="h-6 w-px bg-slate-700 hidden sm:block" />
             <Code2 size={20} className="text-blue-400" />
             <span className="text-sm font-bold uppercase tracking-widest text-slate-200">
               {selectedLanguage} Source
             </span>
-            <div className="ml-4 flex rounded-lg bg-white/5 p-1 border border-white/10">
+            <div className="flex rounded-lg bg-white/5 p-1 border border-white/10">
               {["C++", "Java", "Python", "JavaScript"].map((lang) => (
                 <button
                   key={lang}
