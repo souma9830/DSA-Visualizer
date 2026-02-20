@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   Activity,
+  ChevronLeft,
   Binary,
   CheckCheck,
   Clock3,
@@ -455,6 +457,13 @@ export default function LinkedListVisualizerPage() {
 
   return (
     <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
+      <Link
+        to="/algorithms"
+        className="group mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-white"
+      >
+        <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+        Back to Algorithms
+      </Link>
       <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.16),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
 
       <MotionSection
@@ -486,7 +495,7 @@ export default function LinkedListVisualizerPage() {
               </div>
             </div>
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
-              {[ { label: "Nodes", val: nodes.length, color: "text-white" }, { label: "Time", val: activeAlgorithm.complexity, color: "text-cyan-200" }, { label: "Space", val: activeAlgorithm.space, color: "text-blue-100" }, { label: "Steps", val: stepCount, color: "text-emerald-200" } ].map((stat) => (
+              {[{ label: "Nodes", val: nodes.length, color: "text-white" }, { label: "Time", val: activeAlgorithm.complexity, color: "text-cyan-200" }, { label: "Space", val: activeAlgorithm.space, color: "text-blue-100" }, { label: "Steps", val: stepCount, color: "text-emerald-200" }].map((stat) => (
                 <div key={stat.label} className="rounded-xl border border-white/10 bg-white/5 p-3">
                   <p className="text-[11px] uppercase tracking-wider text-slate-400">{stat.label}</p>
                   <p className={`mt-1 text-sm font-semibold ${stat.color}`}>{stat.val}</p>
@@ -600,9 +609,9 @@ export default function LinkedListVisualizerPage() {
             <span className="text-sm font-bold uppercase tracking-widest text-slate-200">{selectedLanguage} Source</span>
             <div className="ml-4 flex rounded-lg bg-white/5 p-1 border border-white/10">
               {["C++", "Java", "Python", "JavaScript"].map((lang) => (
-                <button 
-                  key={lang} 
-                  onClick={() => setSelectedLanguage(lang)} 
+                <button
+                  key={lang}
+                  onClick={() => setSelectedLanguage(lang)}
                   className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${selectedLanguage === lang ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
                 >
                   {lang}
