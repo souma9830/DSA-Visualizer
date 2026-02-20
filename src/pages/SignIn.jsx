@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -29,6 +29,7 @@ export default function SignIn() {
         email: '',
         password: '',
     });
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = (e) => {
@@ -120,14 +121,25 @@ export default function SignIn() {
                                 <input
                                     id="password"
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     autoComplete="current-password"
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="block w-full rounded-xl border border-white/10 bg-slate-800/50 py-3 pl-10 pr-3 text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-all duration-300"
+                                    className="block w-full rounded-xl border border-white/10 bg-slate-800/50 py-3 pl-10 pr-12 text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-all duration-300"
                                     placeholder="••••••••"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-300 transition-colors"
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-5 w-5" />
+                                    ) : (
+                                        <Eye className="h-5 w-5" />
+                                    )}
+                                </button>
                             </div>
                         </motion.div>
 

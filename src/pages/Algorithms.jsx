@@ -104,6 +104,20 @@ const algorithmsCatalog = [
     accent: 'text-fuchsia-200',
   },
   {
+    id: 'merge-sort',
+    title: 'Merge Sort',
+    description:
+      'A divide and conquer algorithm that splits the array into halves, recursively sorts them, and merges them.',
+    path: '/visualizer/merge-sort',
+    category: 'sorting',
+    type: 'Divide & Conquer',
+    complexity: 'O(n log n)',
+    level: 'Intermediate',
+    icon: Layers,
+    gradient: 'from-indigo-500/25 via-blue-500/15 to-transparent',
+    accent: 'text-indigo-200',
+  },
+  {
     id: 'heap-sort',
     title: 'Heap Sort',
     description:
