@@ -12,6 +12,7 @@ import {
   Layers,
   Search,
   Sparkles,
+  Network,
   TimerReset,
   X,
   Zap,
@@ -159,6 +160,19 @@ const algorithmsCatalog = [
     gradient: 'from-violet-500/25 via-blue-500/15 to-transparent',
     accent: 'text-violet-200',
   },
+  {
+    id: 'prims',
+    title: "Prim's Algorithm",
+    description: 'Build a Minimum Spanning Tree by greedily adding the cheapest edge that connects a visited node to an unvisited node.',
+    path: '/visualizer/prims',
+    category: 'searching', // Or 'graphs' if you have it
+    type: 'MST',
+    complexity: 'O(E log V)',
+    level: 'Hard',
+    icon: Network,
+    gradient: 'from-emerald-500/25 via-teal-500/15 to-transparent',
+    accent: 'text-emerald-200',
+},
   {
     id: 'depth-first-search',
     title: 'Depth First Search',
