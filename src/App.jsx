@@ -16,6 +16,7 @@ import KruskalPage from "./pages/KruskalPage";
 import SignIn from "./pages/SignIn";
 import TopologicalSortPage from "./pages/TopologicalSortPage";
 import SignUp from "./pages/SignUp";
+import HuffmanCodingPage from "./pages/HuffmanCodingPage";
 
 // UPDATED IMPORTS: Including both CPP and Java versions
 import {
@@ -223,6 +224,7 @@ export default function App() {
             <Route path="/visualizer/kruskal" element={<KruskalPage />} />
             <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
             <Route path="/visualizer/topological-sort" element={<TopologicalSortPage />} />
+            <Route path="/visualizer/huffman-coding" element={<HuffmanCodingPage />} />
           </Routes>
         </main>
 

@@ -244,6 +244,20 @@ const algorithmsCatalog = [
     gradient: "from-emerald-500/25 via-teal-500/15 to-transparent",
     accent: "text-emerald-200",
   },
+  {
+    id: "huffman-coding",
+    title: "Huffman Coding",
+    description:
+      "An optimal prefix code algorithm used for lossless data compression.",
+    path: "/visualizer/huffman-coding",
+    category: "greedy",
+    type: "Greedy",
+    complexity: "O(n log n)",
+    level: "Intermediate",
+    icon: Network,
+    gradient: "from-amber-500/25 via-orange-500/15 to-transparent",
+    accent: "text-amber-200",
+  },
 ];
 
 const filterTabs = [
@@ -254,6 +268,7 @@ const filterTabs = [
   { id: "linked-list", label: "Linked List" },
   { id: "pathfinding", label: "Pathfinding" },
   { id: "mst", label: "Minimum Spanning Tree" },
+  { id: "greedy", label: "Greedy Algorithms" },
 ];
 
 const levelTabs = ["All", "Beginner", "Intermediate", "Advanced"];
@@ -561,8 +576,8 @@ export default function Algorithms() {
                 onClick={() => setActiveFilter(tab.id)}
                 aria-pressed={activeFilter === tab.id}
                 className={`rounded-full border px-4 py-2 text-sm font-semibold transition-all ${activeFilter === tab.id
-                    ? "border-blue-400/60 bg-blue-500/20 text-blue-100 shadow-lg shadow-blue-900/30"
-                    : "border-white/10 bg-white/5 text-slate-300 hover:border-cyan-400/40 hover:text-white"
+                  ? "border-blue-400/60 bg-blue-500/20 text-blue-100 shadow-lg shadow-blue-900/30"
+                  : "border-white/10 bg-white/5 text-slate-300 hover:border-cyan-400/40 hover:text-white"
                   }`}
               >
                 {tab.label}
@@ -605,8 +620,8 @@ export default function Algorithms() {
               onClick={() => setActiveLevel(level)}
               aria-pressed={activeLevel === level}
               className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all ${activeLevel === level
-                  ? "border-emerald-400/55 bg-emerald-500/15 text-emerald-100"
-                  : "border-white/10 bg-white/5 text-slate-300 hover:border-emerald-400/40 hover:text-white"
+                ? "border-emerald-400/55 bg-emerald-500/15 text-emerald-100"
+                : "border-white/10 bg-white/5 text-slate-300 hover:border-emerald-400/40 hover:text-white"
                 }`}
             >
               {level}
