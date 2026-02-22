@@ -23,8 +23,14 @@ const itemVariants = {
     },
 };
 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
+
 export default function SignUp() {
     useDocumentTitle('Sign Up');
+    const navigate = useNavigate();
+    const { signup } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -33,14 +39,19 @@ export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false);
-            console.log('Form submitted:', formData);
-        }, 2000);
+
+        const result = await signup(formData);
+
+        setIsLoading(false);
+        if (result.success) {
+            toast.success('Account created successfully!');
+            navigate('/signin');
+        } else {
+            toast.error(result.message);
+        }
     };
 
     const handleChange = (e) => {

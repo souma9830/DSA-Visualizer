@@ -23,8 +23,14 @@ const itemVariants = {
     },
 };
 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
+
 export default function SignIn() {
     useDocumentTitle('Sign In');
+    const navigate = useNavigate();
+    const { signin } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -32,14 +38,19 @@ export default function SignIn() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false);
-            console.log('Form submitted:', formData);
-        }, 2000);
+
+        const result = await signin(formData);
+
+        setIsLoading(false);
+        if (result.success) {
+            toast.success('Welcome back!');
+            navigate('/');
+        } else {
+            toast.error(result.message);
+        }
     };
 
     const handleChange = (e) => {
