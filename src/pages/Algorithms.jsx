@@ -469,6 +469,19 @@ const algorithmsCatalog = [
     gradient: "from-blue-500/25 via-indigo-500/15 to-transparent",
     accent: "text-blue-200",
   },
+  {
+    id: "kadane",
+    title: "Kadane's Algorithm",
+    description: "An elegant dynamic programming algorithm to find the maximum contiguous subarray sum in O(n) time.",
+    path: "/visualizer/kadane",
+    category: "dynamic-programming",
+    type: "Dynamic Programming",
+    complexity: "O(n)",
+    level: "Intermediate",
+    icon: Zap,
+    gradient: "from-amber-500/25 via-orange-500/15 to-transparent",
+    accent: "text-amber-200",
+  },
 ];
 
 const filterTabs = [

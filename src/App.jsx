@@ -41,6 +41,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import CheatsheetPage from "./pages/CheatsheetPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SinglyLinkedListPage from "./pages/SinglyLinkedListPage";
+import KadanePage from "./pages/KadanePage";
 import DoublyLinkedListPage from "./pages/DoublyLinkedListPage";
 import KnapsackPage from "./pages/KnapsackPage";
 import PublicRoute from "./components/PublicRoute";
@@ -203,6 +204,7 @@ function AppShell() {
           <Route path="/visualizer/queue" element={<QueueVisualizerPage />} />
           <Route path="/visualizer/trie" element={<TrieVisualizerPage />} />
           <Route path="/visualizer/segment-tree" element={<SegmentTreeVisualizerPage />} />
+          <Route path="/visualizer/kadane" element={<KadanePage />} />
           <Route path="/compare" element={<ComparisonPage />} />
           <Route path="/cheatsheet" element={<CheatsheetPage />} />
           <Route path="*" element={<NotFoundPage />} />
