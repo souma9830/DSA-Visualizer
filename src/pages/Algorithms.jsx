@@ -360,6 +360,20 @@ const algorithmsCatalog = [
     accent: "text-emerald-200",
   },
   {
+    id: "kosaraju",
+    title: "Kosaraju's Algorithm",
+    description:
+      "Finds all Strongly Connected Components (SCCs) in a directed graph using two DFS passes.",
+    path: "/visualizer/kosaraju",
+    category: "graph-searching",
+    type: "DFS / Graph",
+    complexity: "O(V+E)",
+    level: "Advanced",
+    icon: Network,
+    gradient: "from-indigo-500/25 via-blue-500/15 to-transparent",
+    accent: "text-indigo-200",
+  },
+  {
     id: "bellman-ford",
     title: "Bellman-Ford Algorithm",
     description: "Computes the shortest paths from a single source vertex to all other vertices. Handles negative weights.",
