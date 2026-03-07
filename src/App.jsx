@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import Algorithms from "./pages/Algorithms";
+import Favorites from "./pages/Favorites";
 import Contact from "./pages/Contact";
 import VisualizerPage from "./pages/VisualizerPage";
 import LinkedListVisualizerPage from "./pages/LinkedListVisualizerPage";
@@ -145,6 +146,7 @@ function AppShell() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/algorithms" element={<Algorithms />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
           <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />

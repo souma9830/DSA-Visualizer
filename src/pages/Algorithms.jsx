@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
@@ -27,7 +27,7 @@ import {
   Crown,
 } from "lucide-react";
 
-const algorithmsCatalog = [
+export const algorithmsCatalog = [
   {
     id: "knapsack",
     title: "0/1 Knapsack",
@@ -544,7 +544,6 @@ const algorithmsCatalog = [
 
 const filterTabs = [
   { id: "all", label: "All" },
-  { id: "bookmarked", label: "★ Bookmarked" },
   { id: "1d-array-sorting", label: "Sorting (1D Array)" },
   { id: "2d-array", label: "2D Array" },
   { id: "graph-sorting", label: "Graph Sorting" },
@@ -578,10 +577,16 @@ const complexityRank = {
   "O(n^2)": 5,
 };
 
-export default function Algorithms() {
+export default function Algorithms({ defaultFilter = "all" }) {
   useDocumentTitle("Algorithms");
 
-  const [activeFilter, setActiveFilter] = useState("all");
+  const navigate = useNavigate();
+  const [activeFilter, setActiveFilter] = useState(defaultFilter);
+
+  // Update activeFilter when defaultFilter prop changes (e.g., navigating between /algorithms and /favorites)
+  useEffect(() => {
+    setActiveFilter(defaultFilter);
+  }, [defaultFilter]);
   const [searchText, setSearchText] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [activeLevel, setActiveLevel] = useState("All");
@@ -681,7 +686,8 @@ export default function Algorithms() {
   };
 
   const toggleBookmark = (id) => {
-    const newBookmarks = bookmarks.includes(id)
+    const isBookmarked = bookmarks.includes(id);
+    const newBookmarks = isBookmarked
       ? bookmarks.filter((b) => b !== id)
       : [...bookmarks, id];
     setBookmarks(newBookmarks);
