@@ -176,7 +176,8 @@ function AppShell() {
           <Route path="/visualizer/singly-linked-list" element={<SinglyLinkedListPage />} />
           <Route path="/visualizer/doubly-linked-list" element={<DoublyLinkedListPage />} />
           <Route path="/visualizer/dll-to-bst" element={<DLLToBSTPage />} />
-
+          {/* Hash visualizers*/}
+          <Route path="/visualizer/hash-table" element={<HashTablePage />} />
           {/* Graph visualizers */}
           <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
           <Route path="/visualizer/bfs" element={<BFSVisualizerPage />} />
@@ -215,7 +216,6 @@ function AppShell() {
           <Route path="/visualizer/segment-tree" element={<SegmentTreeVisualizerPage />} />
           <Route path="/visualizer/kadane" element={<KadanePage />} />
           <Route path="/visualizer/shunting-yard" element={<ShuntingYardPage />} />
-          <Route path="/visualizer/hash-table" element={<HashTablePage />} />
           <Route path="/compare" element={<ComparisonPage />} />
           <Route path="/cheatsheet" element={<CheatsheetPage />} />
           <Route path="*" element={<NotFoundPage />} />

@@ -36,20 +36,33 @@ function nextProbe(strategy, key, size, attempt) {
   return h1; // chaining always uses h1
 }
 
+// ─── [NEW] Probe formula string for a given attempt ──────────────────────────
+function probeFormulaStr(strategy, h1, h2, attempt, size, resultIdx) {
+  if (strategy === "linear")
+    return `slot = (${h1} + ${attempt}) % ${size} = ${resultIdx}`;
+  if (strategy === "quadratic")
+    return `slot = (${h1} + ${attempt}²) % ${size} = ${resultIdx}`;
+  if (strategy === "double")
+    return `slot = (${h1} + ${attempt}×${h2}) % ${size} = ${resultIdx}`;
+  return "";
+}
+
 // ─── Step generator ───────────────────────────────────────────────────────────
 /**
  * Generates an array of frames describing each step of an operation.
  *
  * Frame shape:
  * {
- *   table        : Array<bucket>         – full snapshot of the table
- *   highlightIdx : number|null           – bucket index being examined
- *   probeIdx     : number|null           – current probe slot (OA only)
- *   action       : string                – short label
- *   description  : string                – longer explanation
- *   result       : "found"|"not-found"|"inserted"|"deleted"|"collision"|"probing"|null
- *   hashCalc     : { key, h1, h2? }     – hash computation shown in UI
- *   statsAfter   : { size, load }
+ *   table          : Array<bucket>         – full snapshot of the table
+ *   highlightIdx   : number|null           – bucket index being examined
+ *   probeIdx       : number|null           – current probe slot (OA only)
+ *   action         : string                – short label
+ *   description    : string                – longer explanation
+ *   result         : "found"|"not-found"|"inserted"|"deleted"|"collision"|"probing"|null
+ *   hashCalc       : { key, h1, h2? }     – hash computation shown in UI
+ *   statsAfter     : { size, occupied, tombstones, load }   ← [UPDATED] added tombstones
+ *   probeSequence  : number[]              – [NEW] probe indices visited so far (OA only)
+ *   probeFormula   : string                – [NEW] formula string for current probe (OA only)
  * }
  *
  * bucket shape (chaining)  : { entries: [{key,value,status}], status }
@@ -60,7 +73,10 @@ export function generateHashTableSteps(tableSize, strategy, operation, key, valu
   // Deep-clone so we never mutate the caller's state
   let table = deepClone(initialTable);
 
-  const snap = (highlightIdx, probeIdx, action, description, result, hashCalc) => {
+  // [NEW] track probe sequence across attempts for OA strategies
+  const probeSeq = [];
+
+  const snap = (highlightIdx, probeIdx, action, description, result, hashCalc, formula = "") => {
     frames.push({
       table: deepClone(table),
       highlightIdx,
@@ -70,6 +86,8 @@ export function generateHashTableSteps(tableSize, strategy, operation, key, valu
       result: result ?? null,
       hashCalc: hashCalc ?? null,
       statsAfter: computeStats(table, strategy),
+      probeSequence: [...probeSeq],   // [NEW]
+      probeFormula: formula,           // [NEW]
     });
   };
 
@@ -80,7 +98,7 @@ export function generateHashTableSteps(tableSize, strategy, operation, key, valu
   // ── Initial frame ───────────────────────────────────────────────────────────
   snap(null, null, "Start", `Beginning ${operation} for key "${key}"`, null, hashCalcBase);
 
-  // ── Hash computation frame ──────────────────────────────────────────────────
+  // ── Hash computation frame ────────────────────────────────��─────────────────
   snap(
     h1,
     null,
@@ -93,7 +111,7 @@ export function generateHashTableSteps(tableSize, strategy, operation, key, valu
   if (strategy === "chaining") {
     _chainingOp(frames, table, tableSize, operation, key, value, h1, snap, hashCalcBase);
   } else {
-    _openAddressingOp(frames, table, tableSize, strategy, operation, key, value, h1, snap, hashCalcBase);
+    _openAddressingOp(frames, table, tableSize, strategy, operation, key, value, h1, h2, snap, hashCalcBase, probeSeq);
   }
 
   return frames;
@@ -178,41 +196,44 @@ function _chainingOp(frames, table, tableSize, op, key, value, h1, snap, hc) {
 }
 
 // ─── Open addressing helpers ──────────────────────────────────────────────────
-function _openAddressingOp(frames, table, tableSize, strategy, op, key, value, h1, snap, hc) {
+// [UPDATED] accepts h2 + probeSeq so we can attach probeSequence & probeFormula to frames
+function _openAddressingOp(frames, table, tableSize, strategy, op, key, value, h1, h2, snap, hc, probeSeq) {
   const maxProbes = tableSize;
 
   if (op === "insert") {
     let inserted = false;
     for (let i = 0; i < maxProbes; i++) {
       const idx = nextProbe(strategy, key, tableSize, i);
+      probeSeq.push(idx); // [NEW]
+      const formula = probeFormulaStr(strategy, h1, h2, i, tableSize, idx); // [NEW]
       const slot = table[idx];
       if (i > 0) {
-        snap(h1, idx, "Probing", `Probe ${i}: checking slot ${idx} (${strategyLabel(strategy, i, hc)})`, "probing", hc);
+        snap(h1, idx, "Probing", `Probe ${i}: checking slot ${idx} (${strategyLabel(strategy, i, hc)})`, "probing", hc, formula);
       }
       if (!slot.entry || slot.entry.deleted) {
         if (i > 0) {
           slot.status = "collision";
-          snap(h1, idx, "Collision Resolved", `Slot ${idx} is free — inserting here after ${i} probe(s)`, "collision", hc);
+          snap(h1, idx, "Collision Resolved", `Slot ${idx} is free — inserting here after ${i} probe(s)`, "collision", hc, formula);
         }
         slot.entry = { key, value, status: "inserting" };
         slot.status = "active";
-        snap(h1, idx, "Inserting", `Inserting key "${key}" at slot ${idx}`, "inserted", hc);
+        snap(h1, idx, "Inserting", `Inserting key "${key}" at slot ${idx}`, "inserted", hc, formula);
         slot.entry.status = "inserted";
         slot.status = "default";
-        snap(h1, idx, "Done", `Key "${key}" inserted at slot ${idx}`, "inserted", hc);
+        snap(h1, idx, "Done", `Key "${key}" inserted at slot ${idx}`, "inserted", hc, formula);
         inserted = true;
         break;
       } else if (slot.entry.key === key) {
         slot.entry.status = "highlight";
-        snap(h1, idx, "Key Exists", `Key "${key}" already at slot ${idx} — updating value`, "collision", hc);
+        snap(h1, idx, "Key Exists", `Key "${key}" already at slot ${idx} — updating value`, "collision", hc, formula);
         slot.entry.value = value;
         slot.entry.status = "inserted";
-        snap(h1, idx, "Updated", `Value updated to "${value}"`, "inserted", hc);
+        snap(h1, idx, "Updated", `Value updated to "${value}"`, "inserted", hc, formula);
         inserted = true;
         break;
       } else {
         slot.status = "collision";
-        snap(h1, idx, "Collision!", `Slot ${idx} occupied by "${slot.entry.key}" — probing next`, "collision", hc);
+        snap(h1, idx, "Collision!", `Slot ${idx} occupied by "${slot.entry.key}" — probing next`, "collision", hc, formula);
         slot.status = "default";
       }
     }
@@ -223,21 +244,23 @@ function _openAddressingOp(frames, table, tableSize, strategy, op, key, value, h
     let found = false;
     for (let i = 0; i < maxProbes; i++) {
       const idx = nextProbe(strategy, key, tableSize, i);
+      probeSeq.push(idx); // [NEW]
+      const formula = probeFormulaStr(strategy, h1, h2, i, tableSize, idx); // [NEW]
       const slot = table[idx];
       slot.status = "active";
-      snap(h1, idx, "Probe", `Probe ${i}: checking slot ${idx}`, null, hc);
+      snap(h1, idx, "Probe", `Probe ${i}: checking slot ${idx}`, null, hc, formula);
       if (!slot.entry || (slot.entry === null && !slot.entry?.deleted)) {
         // Empty (not deleted) slot — key doesn't exist
         if (!slot.entry) {
           slot.status = "not-found";
-          snap(h1, idx, "Not Found", `Empty slot at ${idx} — key "${key}" not in table`, "not-found", hc);
+          snap(h1, idx, "Not Found", `Empty slot at ${idx} — key "${key}" not in table`, "not-found", hc, formula);
           slot.status = "default";
           break;
         }
       }
       if (slot.entry && !slot.entry.deleted && slot.entry.key === key) {
         slot.entry.status = "found";
-        snap(h1, idx, "Found!", `Key "${key}" found at slot ${idx} with value "${slot.entry.value}"`, "found", hc);
+        snap(h1, idx, "Found!", `Key "${key}" found at slot ${idx} with value "${slot.entry.value}"`, "found", hc, formula);
         found = true;
         break;
       } else {
@@ -251,21 +274,23 @@ function _openAddressingOp(frames, table, tableSize, strategy, op, key, value, h
     let deleted = false;
     for (let i = 0; i < maxProbes; i++) {
       const idx = nextProbe(strategy, key, tableSize, i);
+      probeSeq.push(idx); // [NEW]
+      const formula = probeFormulaStr(strategy, h1, h2, i, tableSize, idx); // [NEW]
       const slot = table[idx];
       slot.status = "active";
-      snap(h1, idx, "Probe", `Probe ${i}: checking slot ${idx}`, null, hc);
+      snap(h1, idx, "Probe", `Probe ${i}: checking slot ${idx}`, null, hc, formula);
       if (!slot.entry) {
         slot.status = "not-found";
-        snap(h1, idx, "Not Found", `Empty slot at ${idx} — key "${key}" doesn't exist`, "not-found", hc);
+        snap(h1, idx, "Not Found", `Empty slot at ${idx} — key "${key}" doesn't exist`, "not-found", hc, formula);
         slot.status = "default";
         break;
       }
       if (!slot.entry.deleted && slot.entry.key === key) {
         slot.entry.status = "deleting";
-        snap(h1, idx, "Deleting", `Found "${key}" at slot ${idx} — marking as deleted (tombstone)`, "deleted", hc);
+        snap(h1, idx, "Deleting", `Found "${key}" at slot ${idx} — marking as deleted (tombstone)`, "deleted", hc, formula);
         slot.entry.deleted = true;
         slot.entry.status = "deleted";
-        snap(h1, idx, "Done", `Slot ${idx} marked as tombstone ☠️`, "deleted", hc);
+        snap(h1, idx, "Done", `Slot ${idx} marked as tombstone ☠️`, "deleted", hc, formula);
         slot.status = "default";
         deleted = true;
         break;
@@ -289,13 +314,17 @@ function strategyLabel(strategy, attempt, hc) {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function computeStats(table, strategy) {
   let occupied = 0;
+  let tombstones = 0; // [NEW]
   const size = table.length;
   if (strategy === "chaining") {
     table.forEach((b) => { occupied += b.entries.length; });
   } else {
-    table.forEach((b) => { if (b.entry && !b.entry.deleted) occupied++; });
+    table.forEach((b) => {
+      if (b.entry && !b.entry.deleted) occupied++;
+      if (b.entry && b.entry.deleted) tombstones++; // [NEW]
+    });
   }
-  return { size, occupied, load: (occupied / size).toFixed(2) };
+  return { size, occupied, tombstones, load: (occupied / size).toFixed(2) }; // [UPDATED]
 }
 
 function deepClone(obj) {
@@ -363,7 +392,7 @@ int main() {
     cout << ht.search("apple") << endl; // -1
 }`;
 
-// ─── Java code snippet ────────────────────────────────────────────���───────────
+// ─── Java code snippet ────────────────────────────────────────────────────────
 export const hashTableJava = `import java.util.*;
 
 public class HashTable {

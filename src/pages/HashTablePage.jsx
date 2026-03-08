@@ -43,6 +43,7 @@ import {
   shouldSkipHotkeyTarget,
   useStableHotkeys,
 } from "../hooks/useStableHotkeys";
+import { useDocumentTitle } from "../hooks/useDocumentTitle"; // [NEW]
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const DEFAULT_SIZE = 7;
@@ -228,6 +229,107 @@ function TheoryPanel({ strategy }) {
   );
 }
 
+// ─── [NEW] Probe Sequence Diagram ─────────────────────────────────────────────
+function ProbeSequenceDiagram({ probeSequence, currentProbeIdx }) {
+  if (!probeSequence || probeSequence.length === 0) return null;
+  return (
+    <div className="rounded-xl bg-white/5 border border-white/10 p-3 space-y-2">
+      <p className="text-[10px] uppercase tracking-widest text-slate-400 flex items-center gap-1">
+        <Zap size={10} className="text-yellow-300" /> Probe Sequence
+      </p>
+      <div className="flex flex-wrap gap-1">
+        {probeSequence.map((slotIdx, i) => (
+          <motion.span
+            key={i}
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-mono font-bold border transition-all ${
+              i === currentProbeIdx
+                ? "border-cyan-400/70 bg-cyan-500/30 text-cyan-100 ring-2 ring-cyan-400/40"
+                : i === 0
+                ? "border-violet-400/50 bg-violet-500/20 text-violet-200"
+                : "border-slate-600/50 bg-slate-700/40 text-slate-300"
+            }`}
+          >
+            {slotIdx}
+          </motion.span>
+        ))}
+      </div>
+      <p className="text-[10px] text-slate-500">
+        {probeSequence.length} probe{probeSequence.length !== 1 ? "s" : ""} so far
+      </p>
+    </div>
+  );
+}
+
+// ─── [NEW] Strategy Comparison Table (OA only) ────────────────────────────────
+function StrategyComparisonTable({ currentStrategy }) {
+  const [open, setOpen] = useState(false);
+  const rows = [
+    { name: "Formula", linear: "h(k) + i", quadratic: "h(k) + i²", double: "h1(k) + i×h2(k)" },
+    { name: "Clustering", linear: "Primary ✗", quadratic: "Secondary", double: "None ✓" },
+    { name: "Cache", linear: "⭐⭐⭐", quadratic: "⭐⭐", double: "⭐" },
+    { name: "Max Load", linear: "~70%", quadratic: "~50%", double: "~85%" },
+  ];
+  return (
+    <div className="rounded-2xl border border-white/10 bg-slate-800/40 overflow-hidden">
+      <button
+        onClick={() => setOpen((p) => !p)}
+        className="flex w-full items-center justify-between px-4 py-3 text-xs font-bold uppercase tracking-widest text-white hover:bg-white/5 transition-colors"
+      >
+        <span className="flex items-center gap-2">
+          <Zap size={13} className="text-cyan-300" />
+          OA Strategy Comparison
+        </span>
+        {open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-white/10 overflow-x-auto">
+              <table className="w-full text-[11px] text-slate-300">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="px-3 py-2 text-left text-slate-400 font-semibold w-20"></th>
+                    {["linear", "quadratic", "double"].map((s) => (
+                      <th
+                        key={s}
+                        className={`px-3 py-2 text-center font-bold capitalize ${
+                          currentStrategy === s ? "text-cyan-200" : "text-slate-400"
+                        }`}
+                      >
+                        {s === "linear" ? "Linear" : s === "quadratic" ? "Quadratic" : "Double"}
+                        {currentStrategy === s && (
+                          <span className="ml-1 text-[9px] text-cyan-400">◀</span>
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row.name} className="border-b border-white/5 hover:bg-white/5">
+                      <td className="px-3 py-2 text-slate-400 font-medium">{row.name}</td>
+                      <td className={`px-3 py-2 text-center font-mono ${currentStrategy === "linear" ? "text-slate-100" : "text-slate-500"}`}>{row.linear}</td>
+                      <td className={`px-3 py-2 text-center font-mono ${currentStrategy === "quadratic" ? "text-slate-100" : "text-slate-500"}`}>{row.quadratic}</td>
+                      <td className={`px-3 py-2 text-center font-mono ${currentStrategy === "double" ? "text-slate-100" : "text-slate-500"}`}>{row.double}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // ─── Chaining table renderer ──────────────────────────────────────────────────
 function ChainingTable({ table, highlightIdx }) {
   return (
@@ -287,7 +389,7 @@ function ChainingTable({ table, highlightIdx }) {
 }
 
 // ─── Open addressing table renderer ──────────────────────────────────────────
-function OpenAddressTable({ table, highlightIdx, probeIdx }) {
+function OpenAddressTable({ table, highlightIdx, probeIdx, probeSequence }) {
   return (
     <div className="w-full space-y-1.5">
       {table.map((slot, i) => {
@@ -297,13 +399,15 @@ function OpenAddressTable({ table, highlightIdx, probeIdx }) {
             ? "active"
             : slot.status
           : slot.status;
+        // [NEW] mark previously visited slots with subtle dim ring
+        const wasVisited = probeSequence?.includes(i) && i !== probeIdx;
         return (
           <motion.div
             key={i}
             layout
             className={`flex items-center gap-2 rounded-xl border px-3 py-2 transition-all duration-200 ${
               bucketStatusClass[statusKey] || bucketStatusClass.default
-            }`}
+            } ${wasVisited ? "opacity-75" : ""}`}
           >
             <span className="w-7 shrink-0 text-center font-mono text-xs font-bold text-slate-400">
               {i}
@@ -331,11 +435,19 @@ function OpenAddressTable({ table, highlightIdx, probeIdx }) {
             ) : (
               <span className="text-[11px] text-slate-600 italic">empty</span>
             )}
-            {i === probeIdx && (
-              <span className="ml-auto shrink-0 rounded-full border border-violet-400/40 bg-violet-500/15 px-1.5 text-[10px] text-violet-300">
-                probe
-              </span>
-            )}
+            <div className="ml-auto flex items-center gap-1 shrink-0">
+              {/* [NEW] h1 badge on initial hash slot */}
+              {i === highlightIdx && i !== probeIdx && (
+                <span className="rounded-full border border-violet-400/40 bg-violet-500/15 px-1.5 text-[9px] text-violet-300">
+                  h1
+                </span>
+              )}
+              {i === probeIdx && (
+                <span className="rounded-full border border-violet-400/40 bg-violet-500/15 px-1.5 text-[10px] text-violet-300">
+                  probe
+                </span>
+              )}
+            </div>
           </motion.div>
         );
       })}
@@ -344,15 +456,24 @@ function OpenAddressTable({ table, highlightIdx, probeIdx }) {
 }
 
 // ─── Load factor bar ──────────────────────────────────────────────────────────
+// [UPDATED] strategy-specific thresholds + tombstone count
 function LoadFactorBar({ stats, strategy }) {
   if (!stats) return null;
   const loadPct = Math.round(parseFloat(stats.load) * 100);
+
+  // [NEW] strategy-specific warning thresholds
+  const warnThreshold =
+    strategy === "quadratic" ? 50 :
+    strategy === "double"    ? 85 :
+    75; // linear and chaining
+
   const color =
     loadPct < 50
       ? "bg-emerald-500"
-      : loadPct < 75
+      : loadPct < warnThreshold
         ? "bg-amber-500"
         : "bg-rose-500";
+
   return (
     <div className="rounded-xl bg-white/5 p-3 space-y-1.5">
       <div className="flex items-center justify-between text-[11px] text-slate-400">
@@ -361,7 +482,7 @@ function LoadFactorBar({ stats, strategy }) {
         </span>
         <span
           className={`font-bold font-mono ${
-            loadPct >= 75
+            loadPct >= warnThreshold
               ? "text-rose-300"
               : loadPct >= 50
                 ? "text-amber-300"
@@ -378,9 +499,15 @@ function LoadFactorBar({ stats, strategy }) {
           className={`h-full rounded-full ${color}`}
         />
       </div>
-      {!isChaining(strategy) && loadPct >= 75 && (
+      {!isChaining(strategy) && loadPct >= warnThreshold && (
         <p className="text-[10px] text-rose-300 flex items-center gap-1">
           <Info size={10} /> High load — consider resizing
+        </p>
+      )}
+      {/* [NEW] tombstone count */}
+      {!isChaining(strategy) && stats.tombstones > 0 && (
+        <p className="text-[10px] text-slate-400 flex items-center gap-1">
+          ☠ {stats.tombstones} tombstone{stats.tombstones !== 1 ? "s" : ""} — consider rebuilding
         </p>
       )}
     </div>
@@ -389,6 +516,7 @@ function LoadFactorBar({ stats, strategy }) {
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function HashTablePage() {
+  useDocumentTitle("Hash Table Visualizer"); // [NEW]
   const navigate = useNavigate();
 
   // Strategy & table size
@@ -429,7 +557,7 @@ export default function HashTablePage() {
     return hashTableCPP;
   }, [selectedLanguage]);
 
-  // ── Current step ─────────────────────────────────────────────────────────
+  // ── Current step ──────────────────────────────────────────────────────────
   const currentStep = useMemo(() => {
     if (currentStepIndex >= 0 && currentStepIndex < steps.length)
       return steps[currentStepIndex];
@@ -521,7 +649,7 @@ export default function HashTablePage() {
     setOpsLog([]);
   }, [strategy, tableSize, stopAnimation]);
 
-  // ── Step controls ─────────────────────��───────────────────────────────────
+  // ── Step controls ─────────────────────────────────────────────────────────
   const stepForward = useCallback(() => {
     if (currentStepIndex < steps.length - 1)
       setCurrentStepIndex((p) => p + 1);
@@ -598,12 +726,18 @@ export default function HashTablePage() {
   };
 
   // ── Hotkeys ───────────────────────────────────────────────────────────────
+  // [UPDATED] added ← → arrow key step navigation
   useStableHotkeys((e) => {
     if (shouldSkipHotkeyTarget(e.target)) return;
     const key = e.key?.toLowerCase();
+    if (e.repeat) { e.preventDefault(); return; }
+
+    // [NEW] arrow key stepping
+    if (e.code === "ArrowLeft") { e.preventDefault(); stepBackward(); return; }
+    if (e.code === "ArrowRight") { e.preventDefault(); stepForward(); return; }
+
     const isHotkey = e.code === "Space" || key === "r";
     if (!isHotkey) return;
-    if (e.repeat) { e.preventDefault(); return; }
     if (e.code === "Space") {
       e.preventDefault();
       if (runStatus === "Running" || runStatus === "Paused") {
@@ -1081,6 +1215,7 @@ export default function HashTablePage() {
                 table={displayTable}
                 highlightIdx={currentStep?.highlightIdx ?? null}
                 probeIdx={currentStep?.probeIdx ?? null}
+                probeSequence={currentStep?.probeSequence ?? []}  // [NEW]
               />
             )}
           </div>
@@ -1129,9 +1264,25 @@ export default function HashTablePage() {
                     )}
                   </p>
                 )}
+                {/* [NEW] probe formula display */}
+                {!isChaining(strategy) && currentStep.probeFormula && (
+                  <p className="mt-1 text-xs font-mono text-amber-300">
+                    {currentStep.probeFormula}
+                  </p>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* [NEW] Probe Sequence Diagram — OA only */}
+          {!isChaining(strategy) && currentStep?.probeSequence?.length > 0 && (
+            <div className="mt-3">
+              <ProbeSequenceDiagram
+                probeSequence={currentStep.probeSequence}
+                currentProbeIdx={currentStep.probeSequence.length - 1}
+              />
+            </div>
+          )}
 
           {/* Legend */}
           <div className="mt-4 rounded-xl bg-slate-800/80 p-3 border border-slate-700/50">
@@ -1206,6 +1357,13 @@ export default function HashTablePage() {
           <div className="mt-4">
             <TheoryPanel strategy={strategy} />
           </div>
+
+          {/* [NEW] OA Strategy Comparison — shown only for open addressing */}
+          {!isChaining(strategy) && (
+            <div className="mt-3">
+              <StrategyComparisonTable currentStrategy={strategy} />
+            </div>
+          )}
 
           {/* Hotkeys */}
           <div className="mt-4">
