@@ -122,6 +122,7 @@ import { dfsCPP, dfsJava } from "./algorithms/dfs";
 import { AuthProvider } from "./context/AuthContext";
 import { AnalyticsProvider } from "./context/AnalyticsContext";
 import { Toaster } from "react-hot-toast";
+import GlobalGeminiChatbot from "./components/GlobalGeminiChatbot";
 
 function AppShell() {
   const location = useLocation();
@@ -223,6 +224,8 @@ function AppShell() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
+
+      <GlobalGeminiChatbot />
 
       {!hideChrome && <Footer />}
     </div>
