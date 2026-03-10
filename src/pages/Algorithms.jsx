@@ -26,6 +26,7 @@ import {
   BookmarkCheck,
   Crown,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 export const algorithmsCatalog = [
   {
@@ -692,6 +693,13 @@ export default function Algorithms({ defaultFilter = "all" }) {
       : [...bookmarks, id];
     setBookmarks(newBookmarks);
     localStorage.setItem("algo_bookmarks", JSON.stringify(newBookmarks));
+
+    const algorithm = algorithmsCatalog.find((a) => a.id === id);
+    if (isBookmarked) {
+      toast.success(`${algorithm?.title || "Algorithm"} removed from favorites`);
+    } else {
+      toast.success(`${algorithm?.title || "Algorithm"} added to favorites`);
+    }
   };
 
   const handleRandomSpotlight = () => {

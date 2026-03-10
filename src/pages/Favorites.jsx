@@ -11,6 +11,7 @@ import {
     Search,
 } from "lucide-react";
 import { algorithmsCatalog } from "./Algorithms";
+import toast from "react-hot-toast";
 
 export default function Favorites() {
     useDocumentTitle("My Favorites");
@@ -29,6 +30,9 @@ export default function Favorites() {
         const newBookmarks = bookmarks.filter((b) => b !== id);
         setBookmarks(newBookmarks);
         localStorage.setItem("algo_bookmarks", JSON.stringify(newBookmarks));
+
+        const algorithm = algorithmsCatalog.find((a) => a.id === id);
+        toast.success(`${algorithm?.title || "Algorithm"} removed from favorites`);
     };
 
     const MotionSection = motion.section;
