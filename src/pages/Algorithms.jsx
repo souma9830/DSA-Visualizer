@@ -336,6 +336,20 @@ export const algorithmsCatalog = [
     accent: "text-amber-200",
   },
   {
+    id: "postfix-to-infix",
+    title: "Postfix to Infix",
+    description:
+      "Convert postfix expressions (Reverse Polish Notation) back to infix notation using a stack-based algorithm.",
+    path: "/visualizer/postfix-to-infix",
+    category: "stack",
+    type: "Expression Parsing",
+    complexity: "O(n)",
+    level: "Beginner",
+    icon: Layers2,
+    gradient: "from-teal-500/25 via-cyan-500/15 to-transparent",
+    accent: "text-teal-200",
+  },
+  {
     id: "dijkstra",
     title: "Dijkstra's Algorithm",
     description:
