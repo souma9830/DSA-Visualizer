@@ -1017,9 +1017,9 @@ export default function Algorithms({ defaultFilter = "all" }) {
       <div className="space-y-16 mt-12">
         {categoriesToDisplay.map((cat) => {
           // Filter algorithms that belong to this specific category
-          const categoryAlgos = filteredAlgorithms.filter(
-            (algo) => algo.category === cat.id,
-          );
+          const categoryAlgos = filteredAlgorithms
+            .filter((algo) => algo.category === cat.id)
+            .sort((a, b) => (levelRank[a.level] ?? 99) - (levelRank[b.level] ?? 99));
 
           // If no algorithms in this category match current search/filters, don't show the header
           if (categoryAlgos.length === 0) return null;
