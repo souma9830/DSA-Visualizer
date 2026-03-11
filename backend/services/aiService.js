@@ -1,9 +1,91 @@
-const OpenAI = require('openai');
+const fetch = require('node-fetch');
 
-// Initialize OpenAI client
-const openai = process.env.OPENAI_API_KEY 
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_MODEL = process.env.GEMINI_MODEL;
+const DEFAULT_GEMINI_MODELS = [
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-1.5-flash-latest'
+];
+
+const parseGeminiText = (payload) => {
+  const parts = payload?.candidates?.[0]?.content?.parts;
+  if (!Array.isArray(parts)) {
+    return '';
+  }
+
+  return parts
+    .map((part) => part?.text || '')
+    .join('')
+    .trim();
+};
+
+const callGeminiWithModel = async (model, systemInstruction, userPrompt, options = {}) => {
+  if (!GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY is not configured');
+  }
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: systemInstruction }]
+        },
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: userPrompt }]
+          }
+        ],
+        generationConfig: {
+          temperature: options.temperature ?? 0.7,
+          maxOutputTokens: options.maxOutputTokens ?? 700
+        }
+      })
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Gemini API request failed: ${response.status} ${errorText}`);
+  }
+
+  const payload = await response.json();
+  const text = parseGeminiText(payload);
+
+  if (!text) {
+    throw new Error('Gemini API returned an empty response');
+  }
+
+  return text;
+};
+
+const callGemini = async (systemInstruction, userPrompt, options = {}) => {
+  const candidates = GEMINI_MODEL
+    ? [GEMINI_MODEL, ...DEFAULT_GEMINI_MODELS.filter((model) => model !== GEMINI_MODEL)]
+    : DEFAULT_GEMINI_MODELS;
+
+  let lastError;
+
+  for (const model of candidates) {
+    try {
+      return await callGeminiWithModel(model, systemInstruction, userPrompt, options);
+    } catch (error) {
+      lastError = error;
+      // Try next model only for model availability errors.
+      if (!String(error.message).includes('404')) {
+        throw error;
+      }
+    }
+  }
+
+  throw lastError || new Error('Gemini API request failed');
+};
 
 /**
  * Generate an AI explanation for the current algorithm step
@@ -20,7 +102,7 @@ const openai = process.env.OPENAI_API_KEY
  * @returns {Promise<string>} AI-generated explanation
  */
 const generateExplanation = async (context, userQuestion = null) => {
-  if (!openai) {
+  if (!GEMINI_API_KEY) {
     // Fallback to rule-based explanations if no API key
     return generateFallbackExplanation(context, userQuestion);
   }
@@ -49,25 +131,13 @@ Current Visualization Context:
   }
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a patient, knowledgeable algorithm tutor. Explain concepts clearly with analogies when helpful. Use simple language suitable for beginners.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: 500,
-      temperature: 0.7
-    });
-
-    return response.choices[0].message.content;
+    return await callGemini(
+      'You are a patient, knowledgeable algorithm tutor. Explain concepts clearly with analogies when helpful. Use simple language suitable for beginners.',
+      prompt,
+      { temperature: 0.7, maxOutputTokens: 700 }
+    );
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    console.error('Gemini API error:', error);
     return generateFallbackExplanation(context, userQuestion);
   }
 };
@@ -78,7 +148,7 @@ Current Visualization Context:
  * @returns {Promise<Array<string>>} Array of suggestions
  */
 const generateSuggestions = async (context) => {
-  if (!openai) {
+  if (!GEMINI_API_KEY) {
     return generateFallbackSuggestions(context);
   }
 
@@ -89,29 +159,91 @@ const generateSuggestions = async (context) => {
 Provide 3-4 helpful suggestions for what the student could try next or questions they might have. Keep suggestions brief and practical.`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a helpful algorithm tutor. Provide brief, actionable suggestions.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: 200,
-      temperature: 0.7
-    });
+    const text = await callGemini(
+      'You are a helpful algorithm tutor. Provide brief, actionable suggestions.',
+      prompt,
+      { temperature: 0.7, maxOutputTokens: 250 }
+    );
 
-    // Parse suggestions from response
-    const text = response.choices[0].message.content;
-    return text.split('\n').filter(s => s.trim().length > 0).slice(0, 4);
+    // Parse suggestions from response text.
+    return text
+      .split('\n')
+      .map((line) => line.replace(/^[-*\d.\s]+/, '').trim())
+      .filter((line) => line.length > 0)
+      .slice(0, 4);
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    console.error('Gemini API error:', error);
     return generateFallbackSuggestions(context);
   }
+};
+
+const generateChatbotReply = async (message, history = []) => {
+  if (!GEMINI_API_KEY) {
+    return 'AI chat is not configured yet. Please add GEMINI_API_KEY on the backend.';
+  }
+
+  const recentHistory = Array.isArray(history)
+    ? history.slice(-8).map((item) => `${item.role}: ${item.content}`).join('\n')
+    : '';
+
+  const prompt = `You are the DSA Visualizer website assistant.
+Your role:
+- Help users with algorithms, data structures, and how to use this website.
+- Give concise and accurate answers.
+- Use plain English and short steps when helpful.
+
+Conversation so far:
+${recentHistory || 'No prior messages.'}
+
+User: ${message}
+
+Respond as an assistant message only.`;
+
+  try {
+    return await callGemini(
+      'You are a friendly website chatbot and DSA tutor. Keep responses practical and concise.',
+      prompt,
+      { temperature: 0.6, maxOutputTokens: 700 }
+    );
+  } catch (error) {
+    console.error('Gemini chatbot error:', error);
+    return generateFallbackChatbotReply(message, error);
+  }
+};
+
+const generateFallbackChatbotReply = (message, error) => {
+  const text = String(message || '').toLowerCase();
+  const err = String(error?.message || '');
+
+  if (err.includes('429') || err.includes('RESOURCE_EXHAUSTED') || err.includes('quota')) {
+    if (text.includes('hi') || text.includes('hello') || text.includes('how are')) {
+      return 'Hi. I am running in fallback mode because Gemini quota is currently exhausted, but I can still help with DSA basics. Ask me about sorting, searching, graphs, or complexity.';
+    }
+
+    if (text.includes('time complexity') || text.includes('big o')) {
+      return 'Fallback quick guide: Binary Search is O(log n), Merge Sort is O(n log n), Quick Sort average is O(n log n) with O(n^2) worst case, and Bubble/Insertion/Selection Sort are O(n^2).';
+    }
+
+    return 'Gemini quota is currently exhausted for this API key, so I switched to fallback mode. I can still answer common DSA questions and explain algorithm intuition.';
+  }
+
+  if (err.includes('401') || err.includes('403') || err.includes('API key')) {
+    return 'Gemini authentication failed. Please verify the API key and Gemini API access for this project.';
+  }
+
+  if (text.includes('hi') || text.includes('hello') || text.includes('how are')) {
+    return 'Hello. I am here to help with DSA concepts and this visualizer. Ask me a specific topic and I will break it down clearly.';
+  }
+
+  if (text.includes('sort')) {
+    return 'Sorting tip: choose Merge Sort for stable O(n log n), Quick Sort for fast practical average performance, and Insertion Sort for small or nearly sorted arrays.';
+  }
+
+  if (text.includes('search')) {
+    return 'Searching tip: use Linear Search for unsorted data and Binary Search for sorted data to get O(log n) lookup time.';
+  }
+
+  return 'I am temporarily in fallback mode, but I can still help with DSA explanations. Try asking: "Explain BFS vs DFS" or "When should I use Quick Sort?"';
 };
 
 /**
@@ -223,6 +355,7 @@ const clearSession = (sessionId) => {
 module.exports = {
   generateExplanation,
   generateSuggestions,
+  generateChatbotReply,
   createSession,
   addMessage,
   getSessionHistory,

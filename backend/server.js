@@ -31,6 +31,8 @@ connectDB();
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/oauth', require('./routes/oauth'));
 app.use('/api/user', require('./routes/user'));
+app.use('/api/ai-tutor', require('./routes/aiTutor'));
+app.use('/api/chatbot', require('./routes/chatbot'));
 
 const PORT = process.env.PORT || 5000;
 
