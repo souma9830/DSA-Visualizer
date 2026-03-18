@@ -141,6 +141,20 @@ export const algorithmsCatalog = [
     accent: "text-cyan-100",
   },
   {
+    id: "counting-sort",
+    title: "Counting Sort",
+    description:
+      "A non-comparison sort that sorts integers by counting the number of objects that have each distinct key value.",
+    path: "/visualizer/counting-sort",
+    category: "1d-array-sorting",
+    type: "Distribution",
+    complexity: "O(n)",
+    level: "Intermediate",
+    icon: Sparkles,
+    gradient: "from-pink-500/25 via-red-500/15 to-transparent",
+    accent: "text-pink-200",
+  },
+  {
     id: "radix-sort",
     title: "Radix Sort",
     description:
