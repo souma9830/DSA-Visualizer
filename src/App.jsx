@@ -118,6 +118,13 @@ import {
   binarySearchJS,
 } from "./algorithms/binarySearch";
 
+import {
+  countingSortCPP,
+  countingSortJava,
+  countingSortPython,
+  countingSortJS,
+} from "./algorithms/countingSort";
+
 import { dfsCPP, dfsJava } from "./algorithms/dfs";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -164,6 +171,7 @@ function AppShell() {
           <Route path="/visualizer/heap-sort" element={<VisualizerPage name="Heap Sort" cppSnippet={heapSortCPP} javaSnippet={heapSortJava} pythonSnippet={heapSortPython} jsSnippet={heapSortJS} />} />
           <Route path="/visualizer/insertion-sort" element={<VisualizerPage name="Insertion Sort" cppSnippet={insertionSortCPP} javaSnippet={insertionSortJava} pythonSnippet={insertionSortPython} jsSnippet={insertionSortJS} />} />
           <Route path="/visualizer/merge-sort" element={<VisualizerPage name="Merge Sort" cppSnippet={mergeSortCPP} javaSnippet={mergeSortJava} pythonSnippet={mergeSortPython} jsSnippet={mergeSortJS} />} />
+          <Route path="/visualizer/counting-sort" element={<VisualizerPage name="Counting Sort" cppSnippet={countingSortCPP} javaSnippet={countingSortJava} pythonSnippet={countingSortPython} jsSnippet={countingSortJS} />} />
 
           {/* Search visualizers */}
           <Route path="/visualizer/linear-search" element={<VisualizerPage name="Linear Search" cppSnippet={linearSearchCPP} javaSnippet={linearSearchJava} pythonSnippet={linearSearchPython} jsSnippet={linearSearchJS} />} />

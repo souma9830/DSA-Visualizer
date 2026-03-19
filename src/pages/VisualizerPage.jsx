@@ -45,6 +45,7 @@ import { renderHighlightedCode } from "../utils/codeHighlight";
 import { binarysearch } from '../algorithms/binarySearch';
 import { selectionSort } from "../algorithms/selectionSort";
 import { mergeSort } from "../algorithms/mergeSort";
+import { countingSort } from "../algorithms/countingSort";
 import CustomInputModal from "../components/CustomInputModal";
 import AlgorithmExplanationPanel from "../components/AlgorithmExplanationPanel";
 import HotkeysHint from "../components/HotkeysHint";
@@ -164,6 +165,16 @@ const algorithmMap = {
     space: "O(n)",
     description:
       "Merge Sort is a divide-and-conquer algorithm that splits the array into halves, recursively sorts them, and merges the sorted halves.",
+  },
+  'Counting Sort': {
+    run: countingSort,
+    category: "Sorting",
+    best: "O(n + k)",
+    average: "O(n + k)",
+    worst: "O(n + k)",
+    space: "O(k)",
+    description:
+      "Counting Sort is a non-comparison sorting algorithm that counts the frequency of each element to place them sequentially in order.",
   },
 
 };
@@ -576,7 +587,7 @@ export default function VisualizerPage({
               <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
                 <MotionDiv
                   animate={{ width: `${progress}%` }}
-                  className={`h-full bg-gradient-to-r ${themeConfig.chip}`}
+                  className={`h-full bg-linear-to-r ${themeConfig.chip}`}
                 />
               </div>
             </div>
@@ -727,7 +738,7 @@ export default function VisualizerPage({
                 onClick={
                   isPaused ? handleResume : isSorting ? handlePause : handleStart
                 }
-                className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-bold text-white shadow-lg transition-all ${isPaused ? "bg-emerald-600" : isSorting ? "bg-amber-500 text-slate-900" : "bg-gradient-to-r from-blue-600 to-cyan-500"}`}
+                className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-bold text-white shadow-lg transition-all ${isPaused ? "bg-emerald-600" : isSorting ? "bg-amber-500 text-slate-900" : "bg-linear-to-r from-blue-600 to-cyan-500"}`}
               >
                 {isPaused ? (
                   <Play size={18} fill="currentColor" />
@@ -783,7 +794,7 @@ export default function VisualizerPage({
               ))}
             </div>
           </div>
-          <div className="relative h-[300px] sm:h-[450px] bg-slate-900/55 rounded-2xl border border-slate-700/60 flex items-end justify-center gap-0.5 px-4 pb-4">
+          <div className="relative h-75 sm:h-112.5 bg-slate-900/55 rounded-2xl border border-slate-700/60 flex items-end justify-center gap-0.5 px-4 pb-4">
             {showGrid && (
               <div
                 className="absolute inset-0 opacity-10"
@@ -884,7 +895,7 @@ export default function VisualizerPage({
             </button>
           </div>
         </div>
-        <div className="ll-scrollbar max-h-[500px] overflow-auto bg-[#020617] p-6 font-code text-sm leading-relaxed">
+        <div className="ll-scrollbar max-h-125 overflow-auto bg-[#020617] p-6 font-code text-sm leading-relaxed">
           <pre>
             <code>
               {(activeCode || "").split("\n").map((line, i) => (
