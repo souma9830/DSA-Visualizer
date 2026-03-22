@@ -436,6 +436,20 @@ export const algorithmsCatalog = [
     accent: "text-indigo-200",
   },
   {
+    id: "tarjan",
+    title: "Tarjan's Algorithm",
+    description:
+      "Finds all Strongly Connected Components (SCCs) in a directed graph using a single DFS pass and low-link values.",
+    path: "/visualizer/tarjan",
+    category: "graph-searching",
+    type: "DFS / Graph",
+    complexity: "O(V+E)",
+    level: "Advanced",
+    icon: Network,
+    gradient: "from-blue-500/25 via-indigo-500/15 to-transparent",
+    accent: "text-blue-200",
+  },
+  {
     id: "bellman-ford",
     title: "Bellman-Ford Algorithm",
     description:

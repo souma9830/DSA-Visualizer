@@ -27,6 +27,7 @@ import SegmentTreeVisualizerPage from "./pages/SegmentTreeVisualizerPage";
 import SignIn from "./pages/SignIn";
 import TopologicalSortPage from "./pages/TopologicalSortPage";
 import KosarajuPage from "./pages/KosarajuPage";
+import TarjanPage from "./pages/TarjanPage";
 import SignUp from "./pages/SignUp";
 import HuffmanCodingPage from "./pages/HuffmanCodingPage";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
@@ -213,6 +214,10 @@ function AppShell() {
           <Route
             path="/visualizer/kosaraju"
             element={<KosarajuPage />}
+          />
+          <Route
+            path="/visualizer/tarjan"
+            element={<TarjanPage />}
           />
           <Route
             path="/visualizer/huffman-coding"
